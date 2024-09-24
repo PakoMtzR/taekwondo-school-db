@@ -158,13 +158,13 @@ class App(tk.Tk):
         """
         self.edit_window = tk.Toplevel()
         self.edit_window.title("Editar Registro")
-        self.edit_window.geometry("360x200")
+        self.edit_window.geometry("360x250")
         self.edit_window.resizable(False, False)
         self.edit_window.columnconfigure(0, weight=0)
         self.edit_window.columnconfigure(1, weight=1)
         
         # Creamos los labels del formulario
-        for i, label in enumerate(["Producto:", "Talla:", "Marca:", "Precio Unitario:", "Stock:"]):
+        for i, label in enumerate(["Producto:", "Talla:", "Marca:", "Precio Unitario[$]:", "Stock:"]):
             ttk.Label(self.edit_window, text=label).grid(row=i, column=0, sticky="e", padx=5, pady=5)
         
         self.entry_product_description = ttk.Entry(self.edit_window)
@@ -173,13 +173,31 @@ class App(tk.Tk):
         self.entry_size.grid(row=1, column=1, sticky="nesw", padx=5, pady=5)
         self.entry_mark = ttk.Entry(self.edit_window)
         self.entry_mark.grid(row=2, column=1, sticky="nesw", padx=5, pady=5)
-        self.entry_price = ttk.Spinbox(self.edit_window, from_=0)
+        self.entry_price = ttk.Spinbox(self.edit_window, from_=0, to=1000)
         self.entry_price.grid(row=3, column=1, sticky="nesw", padx=5, pady=5)
-        self.entry_stock = ttk.Spinbox(self.edit_window, from_=0)
+        self.entry_stock = ttk.Spinbox(self.edit_window, from_=0, to=255)
         self.entry_stock.grid(row=4, column=1, sticky="nesw", padx=5, pady=5)
 
-        ttk.Button(self.open_product_window, text="Aceptar").grid(row=5, column=0, columnspan=2, padx=10, pady=10)
+        ttk.Button(self.edit_window, text="Aceptar", command=self.add_product_to_inventory).grid(row=5, column=0, columnspan=2, padx=10, pady=10)
 
+    def add_product_to_inventory(self):
+        """
+        Agrega un nuevo producto al inventario
+        """
+        try:
+            product_description = self.entry_product_description.get().upper()
+            size = self.entry_size.get().upper()
+            mark = self.entry_mark.get().upper()
+            price_per_unit = int(self.entry_price.get())
+            stock = int(self.entry_stock.get())
+            
+            # print(product_description) #list(product_description,size,mark,price_per_unit,stock)
+        except:
+            print("Revisa tus datos")
+        
+        self.edit_window.destroy()
+
+        
 if __name__ == "__main__":
     app = App()
     app.mainloop()
