@@ -1,13 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-
+import os
 from dotenv import load_dotenv
+from supabase import create_client
 load_dotenv()
     
-import os
-from supabase import create_client
-
 # https://supabase.com/docs/reference/python/introduction
 
 url = os.environ.get("SUPABASE_URL")
@@ -98,8 +96,9 @@ class App(tk.Tk):
             self.content_frame.columnconfigure(i, weight=1)
 
         # Widgets para la busqueda de productos
-        label_product = ttk.Label(self.content_frame, text="Producto:")
-        label_product.grid(row=0, column=0, sticky="e", padx=5, pady=5)
+        ttk.Label(self.content_frame, text="Producto:").grid(row=0, column=0, sticky="e", padx=5, pady=5)
+        # label_product = ttk.Label(self.content_frame, text="Producto:")
+        # label_product.grid(row=0, column=0, sticky="e", padx=5, pady=5)
 
         self.textbox = ttk.Entry(self.content_frame)
         self.textbox.grid(row=0, column=1, columnspan=3, sticky="nesw", padx=5, pady=5)
@@ -156,29 +155,30 @@ class App(tk.Tk):
         """
         Esta funcion abre una ventana emergente (formulario) para poder agregar o modificar un producto 
         """
-        self.edit_window = tk.Toplevel()
-        self.edit_window.title("Editar Registro")
-        self.edit_window.geometry("360x250")
-        self.edit_window.resizable(False, False)
-        self.edit_window.columnconfigure(0, weight=0)
-        self.edit_window.columnconfigure(1, weight=1)
+        self.edit_product_window = tk.Toplevel()
+        self.edit_product_window.title("Editar Registro")
+        self.edit_product_window.geometry("360x250")
+        self.edit_product_window.resizable(False, False)
+        self.edit_product_window.grab_set()
+        self.edit_product_window.columnconfigure(0, weight=0)
+        self.edit_product_window.columnconfigure(1, weight=1)
         
         # Creamos los labels del formulario
         for i, label in enumerate(["Producto:", "Talla:", "Marca:", "Precio Unitario[$]:", "Stock:"]):
-            ttk.Label(self.edit_window, text=label).grid(row=i, column=0, sticky="e", padx=5, pady=5)
+            ttk.Label(self.edit_product_window, text=label).grid(row=i, column=0, sticky="e", padx=5, pady=5)
         
-        self.entry_product_description = ttk.Entry(self.edit_window)
+        self.entry_product_description = ttk.Entry(self.edit_product_window)
         self.entry_product_description.grid(row=0, column=1, sticky="nesw", padx=5, pady=5)
-        self.entry_size = ttk.Entry(self.edit_window)
+        self.entry_size = ttk.Entry(self.edit_product_window)
         self.entry_size.grid(row=1, column=1, sticky="nesw", padx=5, pady=5)
-        self.entry_mark = ttk.Entry(self.edit_window)
+        self.entry_mark = ttk.Entry(self.edit_product_window)
         self.entry_mark.grid(row=2, column=1, sticky="nesw", padx=5, pady=5)
-        self.entry_price = ttk.Spinbox(self.edit_window, from_=0, to=1000)
+        self.entry_price = ttk.Spinbox(self.edit_product_window, from_=0, to=2000)
         self.entry_price.grid(row=3, column=1, sticky="nesw", padx=5, pady=5)
-        self.entry_stock = ttk.Spinbox(self.edit_window, from_=0, to=255)
+        self.entry_stock = ttk.Spinbox(self.edit_product_window, from_=0, to=255)
         self.entry_stock.grid(row=4, column=1, sticky="nesw", padx=5, pady=5)
 
-        ttk.Button(self.edit_window, text="Aceptar", command=self.add_product_to_inventory).grid(row=5, column=0, columnspan=2, padx=10, pady=10)
+        ttk.Button(self.edit_product_window, text="Aceptar", command=self.add_product_to_inventory).grid(row=5, column=0, columnspan=2, padx=10, pady=10)
 
     def add_product_to_inventory(self):
         """
@@ -190,12 +190,11 @@ class App(tk.Tk):
             mark = self.entry_mark.get().upper()
             price_per_unit = int(self.entry_price.get())
             stock = int(self.entry_stock.get())
-            
-            # print(product_description) #list(product_description,size,mark,price_per_unit,stock)
+            self.edit_product_window.destroy()
+            messagebox.showinfo("Éxito", f"Formulario enviado:\nNombre: {product_description}\nTalla: {size}")
         except:
-            print("Revisa tus datos")
-        
-        self.edit_window.destroy()
+            messagebox.showerror("Error", "Todos los campos son obligatorios")
+           
 
         
 if __name__ == "__main__":
